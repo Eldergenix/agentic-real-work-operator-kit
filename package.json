@@ -1,0 +1,42 @@
+{
+  "name": "agentic-real-work-operator-kit",
+  "version": "5.1.0",
+  "private": true,
+  "description": "Reviewable implementation package and deterministic kernel for governed agentic real-work operations.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Eldergenix/agentic-real-work-operator-kit.git"
+  },
+  "homepage": "https://github.com/Eldergenix/agentic-real-work-operator-kit",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "typecheck:worker": "tsc -p tsconfig.worker.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "tsc -p tsconfig.json",
+    "validate:registry": "tsx scripts/validate-registry.ts",
+    "validate:references": "tsx scripts/validate-references.ts",
+    "validate:links": "tsx scripts/validate-local-links.ts",
+    "validate:package": "tsx scripts/validate-package.ts",
+    "ci": "npm run typecheck && npm run typecheck:worker && npm run build && npm run test && npm run test:provider-sim && npm run validate:registry && npm run validate:references && npm run validate:links && npm run validate:cross-runtime && npm run validate:package",
+    "validate:cross-runtime": "tsx scripts/validate-cross-runtime.ts",
+    "test:swift": "swift test --package-path mobile/expo-device-command",
+    "ci:full": "npm run ci && npm run test:swift",
+    "sim:provider": "node provider-sim/calendar-server.mjs",
+    "test:provider-sim": "node scripts/smoke-provider-simulator.mjs"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260716.1",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.20.6",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,53 @@
+version: 1
+required_for_every_committing_adapter:
+  - id: pre_commit_timeout
+    provider_effect: false
+    expected: failed_or_safe_retry
+  - id: post_commit_timeout
+    provider_effect: true
+    response_delivered: false
+    expected: uncertain_then_read_back_before_retry
+  - id: duplicate_delivery_same_key
+    deliveries: 2
+    expected: one_logical_effect
+  - id: duplicate_delivery_different_worker
+    concurrent_workers: 2
+    expected: one_fence_wins
+  - id: delayed_read_back
+    acknowledgement: immediate
+    visibility_delay_ms: 30000
+    expected: provider_acknowledged_then_reconciling_then_verified
+  - id: stale_read
+    first_read_returns_old_revision: true
+    expected: remain_unverified
+  - id: read_back_mismatch
+    provider_object_exists: true
+    arguments_match: false
+    expected: uncertain_or_failed_never_verified
+  - id: out_of_order_webhook
+    order: [completed, acknowledged]
+    expected: monotonic_event_reduction
+  - id: duplicate_webhook
+    duplicates: 3
+    expected: observation_deduplication
+  - id: revoked_between_certification_and_attempt
+    expected: no_provider_attempt
+  - id: kill_switch_between_attempt_and_finalize
+    provider_effect: unknown
+    expected: reconcile_without_new_attempt
+  - id: provider_revision_conflict
+    expected: precondition_failed_or_replan
+  - id: credential_revoked
+    expected: authentication_required_or_failed_without_effect
+  - id: rate_limit
+    expected: bounded_backoff_without_duplicate_effect
+  - id: verifier_unavailable
+    expected: provider_acknowledged_or_uncertain_never_verified
+  - id: compensation_timeout_after_commit
+    expected: compensation_uncertain_then_reconcile
+  - id: compensation_permanently_fails
+    expected: compensation_failed_and_incident
+  - id: provider_api_schema_drift
+    expected: fail_closed_and_demote_adapter
+  - id: correlated_executor_verifier_bug
+    expected: independent_source_or_canary_detects_mismatch

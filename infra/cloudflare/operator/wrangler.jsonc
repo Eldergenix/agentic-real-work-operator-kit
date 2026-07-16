@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../node_modules/wrangler/config-schema.json",
+  "name": "mozi-operator",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-16",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "OPERATOR_LEASES",
+        "class_name": "OperatorLeaseCoordinator"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["OperatorLeaseCoordinator"]
+    }
+  ],
+  "services": [
+    {
+      "binding": "CREDENTIAL_OWNER",
+      "service": "mozi-credential-owner"
+    }
+  ],
+  "vars": {
+    "ACTION_CAPABILITY_ISSUER": "mozi-ai",
+    "ACTION_CAPABILITY_AUDIENCE": "mozi-operator",
+    "ENVIRONMENT": "production"
+  }
+}

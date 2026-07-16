@@ -1,0 +1,58 @@
+schema_version: 1
+program: operator-hcom-temporal-backbone-tournament
+principle: architecture_by_evidence_not_name
+selection_unit:
+  - domain
+  - output_head
+  - prediction_horizon
+  - context_regime
+champions:
+  mandatory_baselines:
+    - deterministic_rules
+    - seasonal_rhythm
+    - boosted_trees
+    - survival_or_competing_risks
+challengers:
+  - marked_temporal_point_process
+  - neural_cde_or_cru
+  - eventflow_like_joint_event_model
+  - transformer
+  - mamba_3
+  - gated_deltanet_2
+  - kimi_kda_hybrid
+  - graph_temporal_network
+  - jepa_style_latent_predictor
+  - procedural_graph_plus_llm
+release_requirements:
+  common:
+    - forward_user_time_isolation
+    - zero_prohibited_source_leakage
+    - calibration_by_critical_stratum
+    - runtime_energy_cost_budget
+    - deterministic_fallback
+    - signed_dataset_and_artifact_lineage
+    - ood_abstention
+  l1_predictor:
+    metrics:
+      - negative_log_likelihood
+      - brier_score
+      - calibration_error
+      - time_to_event_concordance
+      - risk_coverage_frontier
+  l2_simulator:
+    metrics:
+      - action_conditioned_rollout_fidelity
+      - intervention_sensitivity
+      - constraint_consistency
+      - closed_loop_goal_utility_at_fixed_risk
+      - maximum_certified_horizon
+  l3_evolver:
+    constraints:
+      - frozen_online_weights
+      - mismatch_rule_quarantine
+      - no_memory_authority_elevation
+      - test_account_proof_before_promotion
+promotion_rule: >-
+  A challenger is promoted only when its one-sided, cluster-aware lower bound on
+  marginal goal utility at the declared risk budget is positive, all safety and
+  privacy parity checks pass, and the result survives a bounded live canary.

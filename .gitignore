@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+.wrangler/
+.dev.vars
+*.local
+.DS_Store
+mobile/expo-device-command/.build/
+.swiftpm/

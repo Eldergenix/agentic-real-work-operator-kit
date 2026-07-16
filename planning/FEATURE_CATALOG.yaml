@@ -1,0 +1,129 @@
+version: 1
+features:
+  - id: F-001
+    name: Operator Enrollment
+    surfaces: [Settings, Onboarding]
+    backend: [mandates, capability-cells, consent]
+    graduation: kernel_provider_proven
+  - id: F-002
+    name: Autonomy Passport
+    surfaces: [Operator Center, Settings]
+    backend: [capability-cells, promotion-receipts, incidents]
+  - id: F-003
+    name: Goal Lock and Intent Interruption
+    surfaces: [Chat, Agenda, Workers]
+    backend: [goal-specs, plan-ir, intent-epochs]
+  - id: F-004
+    name: Durable Missions
+    surfaces: [Workers, Agenda, Chat]
+    backend: [workflows, actions, outcomes]
+  - id: F-005
+    name: Verified Action Receipts
+    surfaces: [Chat, Activity, Operator Center]
+    backend: [events, verification, mission-outcomes]
+  - id: F-006
+    name: Recovery Center
+    surfaces: [Operator Center, Receipt Detail]
+    backend: [reconciliation, compensation, permanent-effects]
+  - id: F-007
+    name: Context Controls
+    surfaces: [Settings, Adaptive Context]
+    backend: [consent, observations, memory, erasure]
+  - id: F-008
+    name: Teach the Operator
+    surfaces: [Browser Demonstration, Operator Center]
+    backend: [procedure-candidates, plan-templates, sandbox-evidence]
+  - id: F-009
+    name: Calendar Operator
+    surfaces: [Chat, Agenda, Workers]
+    backend: [google-calendar-adapter]
+  - id: F-010
+    name: Communications Operator
+    surfaces: [Chat, Workers]
+    backend: [agentmail, provider-messaging]
+  - id: F-011
+    name: Connected-App Operator
+    surfaces: [Chat, Workers]
+    backend: [typed-composio-adapters]
+  - id: F-012
+    name: Browser Operator
+    surfaces: [Browser Session, Workers]
+    backend: [persistent-browser, verifier]
+  - id: F-013
+    name: Device and Health Operator
+    surfaces: [Mobile, Workers]
+    backend: [device-queue, native-dispatcher]
+  - id: F-014
+    name: Smart-Home Operator
+    surfaces: [Mobile, Workers]
+    backend: [smart-home-adapters]
+  - id: F-015
+    name: Ride Operator
+    surfaces: [Chat, Agenda]
+    backend: [ride-adapter]
+  - id: F-016
+    name: Commerce Operator
+    surfaces: [Card, Purchases, Workers]
+    backend: [agentcard-adapter]
+  - id: F-017
+    name: Human Context Planning
+    surfaces: [Chat, Agenda, Operator Center]
+    backend: [authoritative-state, belief-state, purpose-projection]
+  - id: F-018
+    name: Earned Autonomy
+    surfaces: [Passport, Notifications]
+    backend: [sequential-evaluation, risk, promotion]
+  - id: F-019
+    name: Morning Operator
+    composition: [F-009, F-010, F-015, F-017]
+  - id: F-020
+    name: Relationship Keeper
+    composition: [F-009, F-010, F-016, F-017]
+  - id: F-021
+    name: Project Chief
+    composition: [F-009, F-010, F-011, F-012, F-017]
+  - id: F-022
+    name: Health and Routine Steward
+    composition: [F-009, F-013, F-017]
+  - id: F-023
+    name: Commute and Errand Operator
+    composition: [F-009, F-010, F-015, F-016, F-017]
+  - id: F-024
+    name: Attention Firewall
+    composition: [F-009, F-010, F-011, F-013, F-017]
+  - id: F-025
+    name: Recurring and Replenishment Operator
+    surfaces: [Workers, Card, Purchases]
+    backend: [mandate-schedules, rolling-budgets, drift-stop]
+    graduation: a5_subwave
+  - id: F-026
+    name: Travel and High-Value Booking Operator
+    surfaces: [Chat, Agenda, Workers, Purchases]
+    backend: [itinerary-binding, quote-binding, cancellation-reconciliation]
+    graduation: a5_subwave
+  - id: F-027
+    name: Public Communication Operator
+    surfaces: [Chat, Workers, Receipt Detail]
+    backend: [audience-binding, content-hash, post-verifier, mitigation]
+    graduation: a5_subwave
+  - id: F-028
+    name: Destructive and Clerical Submission Operator
+    surfaces: [Chat, Browser Session, Workers, Receipt Detail]
+    backend: [pre-state-snapshot, point-of-no-return, permanent-effect-receipt]
+    graduation: a5_subwave
+  - id: F-029
+    name: Authentication Handoff
+    surfaces: [Chat, Browser Session, Mobile, Workers]
+    backend: [workflow-pause, bound-resume, fresh-epoch-check]
+  - id: F-030
+    name: Global and Domain Kill Controls
+    surfaces: [Operator Center, Settings, Receipt Detail]
+    backend: [kill-epochs, action-fencing, incident-demotion]
+  - id: F-031
+    name: Effect and Mission Outcome Separation
+    surfaces: [Chat, Activity, Operator Center, Agenda]
+    backend: [verification-observations, terminal-goal-predicates, maturity-horizons]
+  - id: F-032
+    name: Model and Context Influence Transparency
+    surfaces: [Receipt Detail, Context Controls, Autonomy Passport]
+    backend: [model-influence-receipts, purpose-projection, artifact-lineage]

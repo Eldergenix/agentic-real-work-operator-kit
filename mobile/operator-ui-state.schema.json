@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Eldergenix/agentic-real-work-operator-kit/main/mobile/operator-ui-state.schema.json",
+  "title": "Operator UI State",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["missionId", "actionId", "effectState", "missionState", "updatedAt"],
+  "properties": {
+    "missionId": { "type": "string", "format": "uuid" },
+    "actionId": { "type": "string", "format": "uuid" },
+    "effectState": {
+      "enum": [
+        "planned", "authorized", "reserved", "awaiting_authentication", "risk_abstained",
+        "executing", "provider_acknowledged", "verified", "permanent_verified", "uncertain",
+        "reconciling", "failed", "compensating", "compensated", "compensation_failed",
+        "expired", "superseded", "aborted"
+      ]
+    },
+    "missionState": {
+      "enum": ["open", "evaluating", "goal_satisfied", "partially_satisfied", "goal_failed", "goal_uncertain", "superseded"]
+    },
+    "verificationGrade": { "enum": ["V0", "V1", "V2", "V3", "V4"] },
+    "providerObjectId": { "type": "string" },
+    "recoverySemantics": {
+      "enum": ["true_reversal", "time_limited_cancellation", "restoration", "refund_initiated", "refund_settled", "correction", "mitigation", "partial_reversal", "irreversible"]
+    },
+    "safeUserMessage": { "type": "string" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}

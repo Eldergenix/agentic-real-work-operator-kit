@@ -1,0 +1,29 @@
+{
+  "goalId": "11111111-1111-4111-8111-111111111111",
+  "version": 1,
+  "intentEpoch": 0,
+  "userId": "22222222-2222-4222-8222-222222222222",
+  "conversationId": "conversation-42",
+  "sourceMessageIds": ["message-99"],
+  "objective": "Create a private focus block on my exact primary calendar tomorrow from 09:00 to 10:00.",
+  "terminalPredicates": [{
+    "predicateId": "calendar-object-matches",
+    "description": "The exact provider event exists with the requested time and privacy.",
+    "kind": "provider_state",
+    "expression": { "eventExists": true, "visibility": "private" },
+    "maturityHorizonMs": 0,
+    "requiredVerificationGrade": "V2"
+  }],
+  "forbiddenSideEffects": [],
+  "authoritySlots": {
+    "actionFamily": { "value": "calendar.event.create", "source": "explicit_user_text", "provenanceNodeId": "p-action" },
+    "account": { "value": "primary", "source": "mandate_default", "provenanceNodeId": "p-account" },
+    "target": { "value": "primary", "source": "provider_unique_resolution", "provenanceNodeId": "p-target" }
+  },
+  "unresolvedSlots": [],
+  "mandateId": "33333333-3333-4333-8333-333333333333",
+  "policyHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "consentEpoch": "consent-7",
+  "validUntil": "2026-07-17T08:00:00.000Z",
+  "canonicalHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+}

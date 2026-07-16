@@ -1,0 +1,33 @@
+schema_version: 1
+policy_id: operator-autonomy-promotion-v4
+hard_invariants:
+  zero_tolerance:
+    - unauthorized_effect
+    - wrong_target
+    - protected_argument_drift
+    - cap_or_currency_violation
+    - purpose_or_consent_violation
+    - duplicate_external_effect
+    - verifier_false_positive
+    - credential_exposure
+    - prohibited_category
+    - public_audience_mismatch
+    - material_loss_outside_policy
+layers:
+  effect_reliability:
+    strata: [provider, adapter_version, action_contract, verification_grade, consequence_band, amount_band]
+    endpoints: [verified_completion, unresolved_outcome, duplicate_prevention, mismatch, recovery, compensation]
+  autonomous_decision_value:
+    endpoints: [false_act, missed_beneficial_act, wrong_timing, regret, correction, interruption, missed_support, verified_goal_utility]
+    required_logging: [eligible_candidates, selection_probabilities, abstention_probability, support_probability]
+  runtime_risk:
+    requirements: [fresh_state, current_epochs, action_conditional_risk_bound, ood_support, verifier_available]
+statistics:
+  sequential_monitoring: anytime_valid_confidence_sequences_or_predeclared_alpha_spending
+  cluster_unit: user
+  off_policy:
+    require_overlap: true
+    require_known_propensities: true
+    require_effective_sample_size: true
+    maximum_importance_weight: 20
+  personal_model: hierarchical_dynamic_model_with_time_decay_and_change_points

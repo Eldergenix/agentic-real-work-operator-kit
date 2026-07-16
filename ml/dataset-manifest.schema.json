@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Eldergenix/agentic-real-work-operator-kit/main/ml/dataset-manifest.schema.json",
+  "title": "Operator Kit HCOM Dataset Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["datasetId", "createdAt", "purpose", "consentEpochs", "sourceClasses", "splitStrategy", "counts", "contentHash"],
+  "properties": {
+    "datasetId": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "purpose": { "type": "string" },
+    "consentEpochs": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "sourceClasses": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "prohibitedSourcesAbsent": { "const": true },
+    "splitStrategy": {
+      "type": "object",
+      "required": ["userIsolation", "timeIsolation"],
+      "properties": {
+        "userIsolation": { "const": true },
+        "timeIsolation": { "const": true },
+        "cutoffs": { "type": "object" }
+      }
+    },
+    "counts": {
+      "type": "object",
+      "required": ["users", "observations", "actionConditionedTransitions", "matureOutcomes"],
+      "properties": {
+        "users": { "type": "integer", "minimum": 0 },
+        "observations": { "type": "integer", "minimum": 0 },
+        "actionConditionedTransitions": { "type": "integer", "minimum": 0 },
+        "matureOutcomes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "missingnessReport": { "type": "object" },
+    "censoringReport": { "type": "object" },
+    "supportReport": { "type": "object" },
+    "privacyReport": { "type": "object" },
+    "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+  }
+}

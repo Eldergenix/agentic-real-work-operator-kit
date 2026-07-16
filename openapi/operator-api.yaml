@@ -1,0 +1,173 @@
+openapi: 3.1.0
+info:
+  title: Agentic Real-Work Operator Kit API
+  version: 4.0.0
+  description: Server-authoritative API surface. Public clients never call the credential-bearing broker directly.
+servers:
+  - url: https://api.example.invalid
+security:
+  - bearerAuth: []
+paths:
+  /operator/mandates:
+    get:
+      operationId: listMandates
+      responses:
+        '200': { description: Mandates, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/MandateSummary' } } } } }
+    post:
+      operationId: createMandate
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateMandateRequest' } } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/MandateSummary' } } } }
+        '422': { $ref: '#/components/responses/Problem' }
+  /operator/mandates/{mandateId}:
+    get:
+      operationId: getMandate
+      parameters: [ { $ref: '#/components/parameters/MandateId' } ]
+      responses:
+        '200': { description: Mandate, content: { application/json: { schema: { $ref: '#/components/schemas/MandateSummary' } } } }
+        '404': { $ref: '#/components/responses/Problem' }
+    patch:
+      operationId: updateMandate
+      parameters: [ { $ref: '#/components/parameters/MandateId' } ]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateMandateRequest' } } } }
+      responses:
+        '200': { description: New immutable mandate version, content: { application/json: { schema: { $ref: '#/components/schemas/MandateSummary' } } } }
+        '409': { $ref: '#/components/responses/Problem' }
+  /operator/mandates/{mandateId}/revoke:
+    post:
+      operationId: revokeMandate
+      parameters: [ { $ref: '#/components/parameters/MandateId' } ]
+      responses:
+        '200': { description: Revoked and epoch incremented }
+  /operator/status:
+    get:
+      operationId: getOperatorStatus
+      responses:
+        '200': { description: Current tiers, evidence, incidents, pauses and connector state }
+  /operator/missions:
+    post:
+      operationId: createMission
+      description: Compiles authenticated intent into GoalSpec and immutable Plan IR before any committing effect.
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateMissionRequest' } } } }
+      responses:
+        '202': { description: Mission accepted, content: { application/json: { schema: { $ref: '#/components/schemas/Mission' } } } }
+        '422': { $ref: '#/components/responses/Problem' }
+  /operator/missions/{missionId}:
+    get:
+      operationId: getMission
+      parameters: [ { name: missionId, in: path, required: true, schema: { type: string, format: uuid } } ]
+      responses:
+        '200': { description: Mission and goal outcome }
+  /operator/actions/{actionId}:
+    get:
+      operationId: getActionReceipt
+      parameters: [ { $ref: '#/components/parameters/ActionId' } ]
+      responses:
+        '200': { description: Redacted action aggregate and verification observations, content: { application/json: { schema: { $ref: '#/components/schemas/ActionReceipt' } } } }
+  /operator/actions/{actionId}/reconcile:
+    post:
+      operationId: reconcileAction
+      parameters: [ { $ref: '#/components/parameters/ActionId' } ]
+      responses:
+        '202': { description: Reconciliation scheduled }
+        '409': { $ref: '#/components/responses/Problem' }
+  /operator/actions/{actionId}/compensate:
+    post:
+      operationId: compensateAction
+      parameters: [ { $ref: '#/components/parameters/ActionId' } ]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { expectedVersion: { type: integer }, reason: { type: string } }, required: [expectedVersion] } } } }
+      responses:
+        '202': { description: Truthful compensator scheduled }
+        '409': { $ref: '#/components/responses/Problem' }
+  /operator/pause:
+    post:
+      operationId: setPause
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/PauseRequest' } } } }
+      responses:
+        '200': { description: Kill-switch epoch changed }
+components:
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  parameters:
+    MandateId: { name: mandateId, in: path, required: true, schema: { type: string, format: uuid } }
+    ActionId: { name: actionId, in: path, required: true, schema: { type: string, format: uuid } }
+  responses:
+    Problem:
+      description: Problem details
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Problem:
+      type: object
+      required: [type, title, status, code]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        code: { type: string }
+        detail: { type: string }
+        safeSupportAction: { type: string }
+    CreateMandateRequest:
+      type: object
+      required: [goals, actionFamilies, exactTargets, maximumAutonomyEnvelope, budgets, purposes, expiresAt]
+      properties:
+        goals: { type: array, items: { type: string } }
+        actionFamilies: { type: array, items: { type: string } }
+        exactTargets: { type: array, items: { type: object } }
+        maximumAutonomyEnvelope: { type: array, items: { type: string } }
+        budgets: { type: array, items: { type: object } }
+        purposes: { type: array, items: { type: string } }
+        automaticPromotion: { type: boolean, default: true }
+        expiresAt: { type: string, format: date-time }
+    UpdateMandateRequest:
+      allOf:
+        - $ref: '#/components/schemas/CreateMandateRequest'
+        - type: object
+          required: [expectedVersion]
+          properties: { expectedVersion: { type: integer, minimum: 1 } }
+    MandateSummary:
+      type: object
+      required: [mandateId, version, status, humanSummary, machinePolicyHash, tiers]
+      properties:
+        mandateId: { type: string, format: uuid }
+        version: { type: integer }
+        status: { enum: [active, paused, revoked, expired] }
+        humanSummary: { type: string }
+        machinePolicyHash: { type: string }
+        tiers: { type: array, items: { type: object } }
+    CreateMissionRequest:
+      type: object
+      required: [sourceMessageId, objective]
+      properties:
+        sourceMessageId: { type: string }
+        objective: { type: string }
+        mandateId: { type: string, format: uuid }
+        schedule: { type: object }
+    Mission:
+      type: object
+      required: [missionId, goalId, state]
+      properties:
+        missionId: { type: string, format: uuid }
+        goalId: { type: string, format: uuid }
+        state: { enum: [open, evaluating, goal_satisfied, partially_satisfied, goal_failed, goal_uncertain, superseded] }
+    ActionReceipt:
+      type: object
+      required: [actionId, status, actionFamily, target, events]
+      properties:
+        actionId: { type: string, format: uuid }
+        status: { type: string }
+        actionFamily: { type: string }
+        target: { type: object }
+        providerObjectId: { type: string }
+        verificationGrade: { enum: [V0, V1, V2, V3, V4] }
+        recoverySemantics: { type: string }
+        events: { type: array, items: { type: object } }
+    PauseRequest:
+      type: object
+      required: [scopeType, scopeId, active]
+      properties:
+        scopeType: { enum: [global, user, mandate, domain, action_family] }
+        scopeId: { type: string }
+        active: { type: boolean }
+        reason: { type: string }

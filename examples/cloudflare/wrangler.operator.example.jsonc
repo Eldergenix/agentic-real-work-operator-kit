@@ -1,0 +1,31 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mozi-operator",
+  "main": "operator-entrypoint.ts",
+  "compatibility_date": "2026-07-16",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ACTION_COORDINATOR",
+        "class_name": "ActionCoordinator"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["ActionCoordinator"]
+    }
+  ],
+  "hyperdrive": [
+    {
+      "binding": "OPERATOR_DB",
+      "id": "REPLACE_WITH_REVIEWED_HYPERDRIVE_ID"
+    }
+  ]
+}

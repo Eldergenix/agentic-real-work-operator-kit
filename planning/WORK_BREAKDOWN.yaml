@@ -1,0 +1,322 @@
+version: 4
+program: agentic-real-work-operator
+status: implementation-reference
+packages:
+  - id: P0A
+    name: Intent and Plan Integrity
+    priority: 0
+    depends_on: []
+    deliverables:
+      - GoalSpec and protected-slot schemas
+      - authenticated source-message/direct-command attestation
+      - intent epochs and semantic interruption handling
+      - immutable Plan IR
+      - causal provenance graph
+      - deterministic information-flow reference monitor
+    integration_files:
+      - src/lib/operator/goal-spec.ts
+      - src/lib/operator/intent-compiler.server.ts
+      - src/lib/operator/intent-epoch.ts
+      - src/lib/operator/plan-ir.ts
+      - src/lib/operator/provenance.ts
+      - src/lib/operator/information-flow.ts
+      - src/lib/operator/reference-monitor.ts
+      - src/lib/operator/denial-result.ts
+      - src/lib/agent-goal/run-turn.ts
+      - src/lib/agent-goal/workflow-core.ts
+    acceptance:
+      - ambiguous protected target cannot be guessed
+      - model or external content cannot select target/account/amount/audience
+      - material user revision invalidates stale nodes and capabilities
+      - Plan IR mutation changes canonical hash and requires reauthorization
+      - denial response does not leak hidden policy to planner context
+
+  - id: P0B
+    name: Action and Effect Registry
+    priority: 0
+    depends_on: [P0A]
+    deliverables:
+      - exhaustive read/commit classification
+      - action, target, consequence, idempotency, verifier and recovery contracts
+      - action-family ownership and legacy retirement inventory
+      - CI admission invariant
+    integration_files:
+      - src/lib/operator/action-contract.ts
+      - src/lib/operator/effect-registry.ts
+      - docs/operator/action-family-ownership.md
+    acceptance:
+      - unknown committing tool fails admission
+      - promoted family requires executor, verifier, receipt mapping and recovery/permanence contract
+      - every committing call site is broker-routed or hard-disabled
+
+  - id: P1
+    name: Event-Sourced Lifecycle and Approved Dispatch
+    priority: 0
+    depends_on: [P0A, P0B]
+    deliverables:
+      - exact approvedCanonical/direct-command dispatch
+      - logical action, attempt, event, verification, recovery and mission-outcome model
+      - transition reducer
+      - fenced replay and uncertainty handling
+    integration_files:
+      - src/lib/agent-goal/run-turn.ts
+      - src/lib/agent-goal/run-context.server.ts
+      - src/lib/agent-goal/workflow-core.ts
+      - infra/cloudflare-app/user-goal-workflow.ts
+      - supabase/migrations/20260715140000_operator_action_lifecycle.sql
+    acceptance:
+      - approved action executes under exact original hash once logically
+      - timeout after possible commit becomes uncertain
+      - reconciliation occurs before any retry
+      - verified effect does not imply mission success
+      - stale fence cannot finalize or reattempt
+
+  - id: P2
+    name: Mandates, Capability Lattice and Promotion
+    priority: 0
+    depends_on: [P0A, P0B]
+    deliverables:
+      - mandate versioning and canonical policy
+      - capability cells and maximum-autonomy envelope
+      - direct-command single-use attestations
+      - promotion/demotion evidence epochs
+      - legacy grant/journey compiler
+    integration_files:
+      - src/lib/autonomy/mandate.ts
+      - src/lib/autonomy/capability.ts
+      - src/lib/autonomy/evidence.ts
+      - src/lib/autonomy/promotion.ts
+      - src/lib/autonomy/gate.ts
+      - src/lib/autonomy/direct-command.server.ts
+      - src/lib/autonomy/legacy-grant-compiler.server.ts
+      - supabase/migrations/20260715130000_operator_mandates.sql
+    acceptance:
+      - exact enrolled cell can execute without repetitive approval
+      - adjacent target/domain/provider/consequence cell fails
+      - promotion cannot widen envelope or reduce verifier/idempotency requirements
+      - revoke and severe incidents demote atomically
+
+  - id: P3
+    name: Private Credential-Isolated Broker
+    priority: 0
+    depends_on: [P1, P2]
+    deliverables:
+      - private mozi-operator WorkerEntrypoint
+      - service-binding client
+      - short-lived signed execution capability
+      - atomic reservation and fenced attempt claim
+      - adapter execution, verification, reconciliation and compensation
+      - Durable Object coordination atoms
+    integration_files:
+      - src/lib/operator/broker-client.server.ts
+      - infra/cloudflare-app/operator/authorization.server.ts
+      - infra/cloudflare-app/operator/reservation.server.ts
+      - infra/cloudflare-app/operator/execute.server.ts
+      - infra/cloudflare-app/operator/verify.server.ts
+      - infra/cloudflare-app/operator/reconcile.server.ts
+      - infra/cloudflare-app/operator/compensate.server.ts
+      - infra/cloudflare-app/operator/saga.server.ts
+      - infra/cloudflare-app/wrangler.operator.jsonc
+    acceptance:
+      - planner/model/router bundles contain no provider credentials
+      - public HTTP or user JWT alone cannot execute action
+      - capability replay/stale epoch/nonce fails
+      - provider attempt is bound to one current reservation/fence
+      - external I/O occurs outside database or Durable Object locks
+
+  - id: P4
+    name: Outcome, Model Influence and Memory Ledger
+    priority: 1
+    depends_on: [P1, P2]
+    deliverables:
+      - bitemporal observations and decision opportunities
+      - model influence receipts
+      - origin-bound memory write receipts and quarantine
+      - consent/purpose/erasure lineage
+      - authoritative event then transactional outbox projections
+    integration_files:
+      - src/lib/ahce/ledger/writer.server.ts
+      - src/lib/ahce/ledger/coverage.server.ts
+      - src/lib/memory/authority.ts
+      - src/lib/memory/admission.ts
+      - src/lib/memory/quarantine.ts
+      - src/lib/memory/contradictions.ts
+      - supabase/migrations/20260715150000_ahce_operator_ledger_v2.sql
+    acceptance:
+      - 100 percent committing attempts have authoritative lifecycle records
+      - model/memory transforms cannot elevate origin authority
+      - erasure traverses derived memories and dataset references
+      - projections can retry without changing authoritative action result
+
+  - id: P5
+    name: Google Calendar Kernel Proof
+    priority: 1
+    depends_on: [P3, P4]
+    deliverables:
+      - private calendar create/update/move/cancel adapters
+      - deterministic client event identity
+      - provider GET verification and revision capture
+      - exact pre-state snapshot and recovery
+      - chat and scheduled Mission integration
+      - real UI receipt
+    integration_files:
+      - src/lib/operator/adapters/google-calendar.ts
+      - src/lib/agent-goal/event-sources/dispatch-adapter.ts
+      - src/lib/tools/mission-tools.ts
+      - Agenda and receipt UI owners
+    acceptance:
+      - real connected test calendar changes from chat and Mission
+      - provider read-back by exact calendar/event ID matches action
+      - duplicate Workflow delivery creates no second logical effect
+      - cancellation/restoration is verified
+      - terminal calendar goal predicate is evaluated
+      - provider, DB, Worker, UI and client refs are recorded
+
+  - id: P6
+    name: Communications and Connected Apps
+    priority: 2
+    depends_on: [P5]
+    deliverables:
+      - exact-recipient delayed and immediate communication cells
+      - delivery/bounce maturity model
+      - typed Composio argument policies
+      - non-calendar provider object verification
+    acceptance:
+      - wrong recipient/audience/content-class drift fails
+      - sent communication is not shown as undoable
+      - provider object and delayed outcome states are visible
+
+  - id: P7
+    name: Persistent Browser Operator
+    priority: 2
+    depends_on: [P5]
+    deliverables:
+      - host/account/workflow/form/commit policy
+      - frozen commit graph and prompt-injection controls
+      - authentication pause/resume
+      - independent account-state verification
+    acceptance:
+      - real test account changes and is verified outside automation trace
+      - page/DOM cannot select protected fields
+      - failed run reconciles or recovers honestly
+
+  - id: P8
+    name: Device, Health and Smart Home
+    priority: 2
+    depends_on: [P5]
+    deliverables:
+      - signed device-command queue and online lease
+      - HealthKit local-sensitive lane
+      - physical-device read-back
+      - physical-risk-separated smart-home cells
+    acceptance:
+      - physical device performs and reads back authorized write
+      - offline commit fails closed
+      - benign-device evidence does not transfer to access/security/hazard controls
+
+  - id: P9
+    name: Rides and Logistics
+    priority: 3
+    depends_on: [P5, P11]
+    deliverables:
+      - quote binding and corridor policy
+      - ride state machine and status polling
+      - cancellation-fee reconciliation
+    acceptance:
+      - sandbox request/status/cancel proof
+      - capped internal live canary after A5 envelope/evidence
+
+  - id: P10
+    name: A5 Consequential Subwaves
+    priority: 4
+    depends_on: [P5, P15]
+    subwaves:
+      - id: P10A
+        name: Commerce
+      - id: P10B
+        name: Recurring Travel and High Value
+      - id: P10C
+        name: Public Communication
+      - id: P10D
+        name: Destructive and Clerical Form Submission
+    acceptance:
+      - each subwave has independent capability cells, evidence strata and canary
+      - evidence never transfers across subwaves
+      - permanent-effect and residual-propagation UI is truthful
+
+  - id: P11
+    name: Governed Human Context Runtime
+    priority: 2
+    depends_on: [P4, P5]
+    deliverables:
+      - authoritative state and observation process
+      - bitemporal source adapters
+      - minimum-purpose projections
+      - calibrated belief state
+      - source lineage, TTL, erasure and local-health controls
+    acceptance:
+      - context changes timing or choice of a real authorized action
+      - context source removal prevents next use and completes erasure proof
+      - inferred context never creates authority
+
+  - id: P12
+    name: Procedural and Temporal Model Tournament
+    priority: 3
+    depends_on: [P4, P11]
+    deliverables:
+      - data-readiness reports
+      - deterministic and statistical baselines
+      - verified procedure graph and selective foresight
+      - per-domain/head model tournament
+      - signed artifacts and competency receipts
+    acceptance:
+      - model improves fixed-risk goal utility or prediction metric under predeclared gate
+      - certified transition/head/horizon only
+      - deterministic fallback and rollback pass
+
+  - id: P13
+    name: Learned Decision Control
+    priority: 4
+    depends_on: [P12]
+    stages:
+      - finite candidate ranker
+      - safe contextual bandit
+      - constrained receding-horizon MPC
+      - Dreamer-style late challenger
+    acceptance:
+      - known propensities and support-aware OPE
+      - hard gate and risk guardian always active
+      - only one certified action/prefix executes before read-back/replan
+      - Dreamer must beat MPC at fixed risk and pass reward-hacking/tail-loss gates
+
+  - id: P14
+    name: Unified Operator UX
+    priority: 1
+    depends_on: [P2, P3, P4]
+    deliverables:
+      - Operator enrollment and canonical mandate review
+      - Autonomy Passport
+      - live Workers and Agenda
+      - action and mission receipt feed
+      - Recovery Center
+      - cross-device controls
+    acceptance:
+      - user sees real mission, effect, verification and goal state separately
+      - global/domain pause and recovery are broker-routed
+      - offline/realtime/accessibility tests pass
+
+  - id: P15
+    name: Production Qualification and Graduation
+    priority: 1
+    depends_on: [P5, P14]
+    deliverables:
+      - migration allowlist/release script
+      - four-Worker deployment parity
+      - provider/internal canaries
+      - kill/revoke/outage/recovery/rollback drills
+      - compatible TestFlight build
+      - signed capability-cell graduation receipts
+    acceptance:
+      - exact migrated schema and deploy/client refs proven
+      - no proposal/shadow terminal path in graduated cells
+      - live evidence bounds and incident gates pass

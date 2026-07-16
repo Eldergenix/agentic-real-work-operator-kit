@@ -1,0 +1,75 @@
+version: 1
+rules:
+  - flags limit exposure or provide rollback; they are not completion evidence
+  - all committing flags default false until provider proof
+  - broker_required must be true before any action-family flag can graduate
+  - model flags can only influence planning; they cannot bypass broker or gate
+flags:
+  operator_kernel_enabled:
+    default: false
+    owner: operator-platform
+  operator_broker_required:
+    default: false
+    owner: security-platform
+    invariant: graduated committing actions fail closed unless true
+  operator_calendar_private_enabled:
+    default: false
+    requires: [operator_kernel_enabled, operator_broker_required]
+  operator_calendar_attendee_enabled:
+    default: false
+    requires: [operator_calendar_private_enabled]
+  operator_communications_enabled:
+    default: false
+    requires: [operator_broker_required]
+  operator_connected_apps_enabled:
+    default: false
+    requires: [operator_broker_required]
+  operator_browser_enabled:
+    default: false
+    requires: [operator_broker_required]
+  operator_device_enabled:
+    default: false
+    requires: [operator_broker_required]
+  operator_health_enabled:
+    default: false
+    requires: [operator_device_enabled]
+  operator_smart_home_enabled:
+    default: false
+    requires: [operator_device_enabled]
+  operator_rides_enabled:
+    default: false
+    requires: [operator_broker_required]
+  operator_a5_commerce_enabled:
+    default: false
+    requires: [operator_broker_required]
+  operator_a5_travel_recurring_enabled:
+    default: false
+    requires: [operator_a5_commerce_enabled]
+  operator_a5_public_enabled:
+    default: false
+    requires: [operator_broker_required]
+  operator_a5_destructive_form_enabled:
+    default: false
+    requires: [operator_broker_required]
+  operator_context_projection_enabled:
+    default: false
+    owner: human-context
+  operator_procedure_graph_enabled:
+    default: false
+    owner: world-model
+  operator_temporal_ensemble_enabled:
+    default: false
+    owner: world-model
+  operator_learned_ranker_enabled:
+    default: false
+    owner: policy-learning
+  operator_safe_bandit_enabled:
+    default: false
+    owner: policy-learning
+  operator_mpc_enabled:
+    default: false
+    owner: policy-learning
+  operator_dreamer_challenger_enabled:
+    default: false
+    owner: policy-learning
+    invariant: challenger only; never direct execution authority

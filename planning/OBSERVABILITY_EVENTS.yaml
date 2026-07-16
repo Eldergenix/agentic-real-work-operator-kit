@@ -1,0 +1,91 @@
+version: 1
+redaction:
+  forbidden:
+    - credentials
+    - authorization headers
+    - cookies
+    - PAN
+    - CVV
+    - password
+    - OTP
+    - raw health measurements
+    - raw private message bodies by default
+common_fields:
+  - request_id
+  - owner_user_hash
+  - mission_id
+  - run_id
+  - goal_spec_id
+  - goal_spec_version
+  - intent_epoch
+  - plan_id
+  - plan_version
+  - action_id
+  - attempt_id
+  - provider
+  - adapter_id
+  - adapter_version
+  - policy_hash
+  - mandate_id
+  - mandate_version
+  - consent_epoch
+  - connector_epoch
+  - kill_switch_epoch
+  - deployment_ref
+  - timestamp
+server_events:
+  - goal_spec_compiled
+  - goal_spec_ambiguous
+  - intent_epoch_incremented
+  - plan_persisted
+  - action_authorization_allowed
+  - action_authorization_denied
+  - risk_execute
+  - risk_abstain
+  - support_requested
+  - reservation_created
+  - reservation_committed
+  - reservation_refunded
+  - attempt_claimed
+  - provider_request_started
+  - provider_acknowledged
+  - provider_timeout_uncertain
+  - verification_observed
+  - action_verified
+  - reconciliation_scheduled
+  - compensation_started
+  - compensation_verified
+  - mission_outcome_evaluated
+  - mandate_revoked
+  - capability_promoted
+  - capability_demoted
+  - incident_opened
+  - kill_switch_changed
+  - model_influence_recorded
+  - memory_write_admitted
+  - memory_write_quarantined
+client_events:
+  - operator_enrollment_started
+  - operator_enrollment_completed
+  - mandate_review_rendered
+  - operator_paused
+  - operator_revoked
+  - mission_interrupt_requested
+  - receipt_viewed
+  - recovery_requested
+  - promotion_notice_viewed
+metrics:
+  - authorization_denial_rate_by_code
+  - action_state_counts
+  - uncertain_age_seconds
+  - reconciliation_latency_seconds
+  - verification_latency_seconds
+  - receipt_projection_lag_seconds
+  - provider_error_rate
+  - duplicate_prevention_incidents
+  - wrong_target_incidents
+  - budget_reservation_failures
+  - risk_coverage
+  - false_act_rate
+  - missed_support_rate
+  - mission_goal_utility

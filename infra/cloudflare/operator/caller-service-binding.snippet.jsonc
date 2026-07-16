@@ -1,0 +1,9 @@
+{
+  "services": [
+    {
+      "binding": "OPERATOR_BROKER",
+      "service": "mozi-operator",
+      "entrypoint": "OperatorBroker"
+    }
+  ]
+}

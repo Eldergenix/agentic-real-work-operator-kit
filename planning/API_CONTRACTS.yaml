@@ -1,0 +1,155 @@
+version: 1
+base_rules:
+  authentication: required unless marked internal
+  idempotency: mutations require Idempotency-Key plus canonical request hash
+  concurrency: version/etag required for mandate and plan edits
+  errors: structured codes; no secret or hidden-policy leakage
+  authority: API routes never bypass server reference monitor/broker
+endpoints:
+  - method: POST
+    path: /api/operator/goal-specs
+    purpose: Compile and persist authenticated GoalSpec
+    request:
+      sourceMessageId: string
+      conversationId: string|null
+      intentInput: object
+    response:
+      goalSpecId: uuid
+      version: integer
+      intentEpoch: integer
+      canonicalHash: string
+      ambiguity: object|null
+
+  - method: POST
+    path: /api/operator/plans
+    purpose: Persist immutable Plan IR candidate for a GoalSpec
+    request:
+      goalSpecId: uuid
+      goalSpecVersion: integer
+      plan: object
+      provenance: object
+    response:
+      planId: uuid
+      version: integer
+      canonicalHash: string
+
+  - method: POST
+    path: /api/operator/mandates
+    purpose: Create canonical mandate and capability envelope
+    request:
+      draftPolicy: object
+      expectedRenderedHash: string
+    response:
+      mandateId: uuid
+      version: integer
+      canonicalPolicy: object
+      humanSummary: string
+      policyHash: string
+
+  - method: PATCH
+    path: /api/operator/mandates/:id
+    purpose: Versioned scope/cap/pause/freeze change
+    headers:
+      If-Match: mandate-version
+    request:
+      patch: object
+    response:
+      version: integer
+      revocationEpoch: integer
+      policyHash: string
+
+  - method: POST
+    path: /api/operator/mandates/:id/revoke
+    purpose: Revoke mandate and increment epoch
+    response:
+      status: revoked
+      revocationEpoch: integer
+
+  - method: GET
+    path: /api/operator/status
+    purpose: Read passport, capability cells, incidents and evidence
+    response:
+      mandates: array
+      capabilityCells: array
+      openIncidents: array
+      unresolvedActions: array
+
+  - method: POST
+    path: /api/operator/missions
+    purpose: Create durable mission from GoalSpec/plan or authenticated intent
+    request:
+      goalSpecId: uuid
+      goalSpecVersion: integer
+      planId: uuid|null
+      schedule: object|null
+    response:
+      missionId: uuid
+      runId: uuid
+      state: string
+
+  - method: POST
+    path: /api/operator/missions/:id/interrupt
+    purpose: Materially revise, cancel, replace or narrow current intent
+    request:
+      sourceMessageId: string
+      change: object
+    response:
+      newIntentEpoch: integer
+      frozenNodes: array
+      affectedActions: array
+
+  - method: POST
+    path: /api/operator/actions/:id/reconcile
+    purpose: Request safe provider read-back/reconciliation
+    response:
+      actionId: uuid
+      state: string
+      nextObservationAt: datetime|null
+
+  - method: POST
+    path: /api/operator/actions/:id/recover
+    purpose: Invoke registered compensation/mitigation through broker
+    request:
+      recoveryStrategyId: string
+      expectedActionVersion: integer
+    response:
+      recoveryActionId: uuid
+      state: string
+
+  - method: POST
+    path: /api/operator/domains/:domain/pause
+    purpose: Increment domain kill/pause epoch for user/mandate
+    request:
+      mandateId: uuid|null
+      reason: string|null
+    response:
+      epoch: integer
+      status: paused
+
+  - method: GET
+    path: /api/operator/actions/:id/receipt
+    purpose: Read redacted authoritative effect and mission receipt
+    response:
+      goal: object
+      effect: object
+      verification: object
+      missionOutcome: object
+      recovery: object|null
+      versions: object
+
+internal_rpc:
+  - service: OPERATOR_BROKER
+    method: execute
+    request:
+      signedCapability: string
+      actionId: uuid
+      attemptId: uuid
+    response:
+      actionId: uuid
+      attemptId: uuid
+      currentState: string
+      providerReceiptRef: string|null
+    notes:
+      - private service binding only
+      - callee reloads authoritative action and current epochs
+      - caller must await RPC
