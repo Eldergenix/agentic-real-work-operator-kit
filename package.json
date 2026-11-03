@@ -27,7 +27,7 @@
     "test:provider-sim": "node scripts/smoke-provider-simulator.mjs"
   },
   "dependencies": {
-    "zod": "^4.4.3"
+    "zod": "^4.6.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "5.20260716.1",
